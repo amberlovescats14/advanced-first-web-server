@@ -1,9 +1,11 @@
 
 const express = require('express')
 const uuid = require('uuid')
+const bodyParser = require('body-parser')
 
 
 const app = express()
+app.use(bodyParser.json())
 const port = process.env.PORT || 4000
 
 const state = require('./state')
@@ -27,22 +29,25 @@ app.get('/users/:id', (req, res)=> {
 //! POST
 
 app.post('/users', (req, res)=> {
-  // const newUser = {
-  //   _id: uuid.v4(),
-  //   name: req.body.name,
-  //   occupation: req.body.occupation,
-  // }
-
-  // if(!newUser.name || !newUser.occupation){
-  //   return res.status(400).json({msg: "Please include name and ocupation"})
-  // } 
-
+  //! require these params 
   const newUser = {
     _id: uuid.v4(),
-    name: "Amber Jones",
-    occupation: "Software Dev",
+    name: req.body.name,
+    occupation: req.body.occupation,
   }
+  console.log(req.body)
 
+  //! if these params are not met
+  if(!newUser.name || !newUser.occupation){
+    return res.status(400).json({msg: "Please include name and ocupation"})
+  } 
+
+  // const newUser = {
+  //   _id: uuid.v4(),
+  //   name: "Amber Jones",
+  //   occupation: "Software Dev",
+  // }
+//! If info is valid, push the new user and send back the last one
   state.users.push(newUser);
   res.json(state.users[state.users.length -1]);
 
